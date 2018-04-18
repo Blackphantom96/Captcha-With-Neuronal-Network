@@ -1,5 +1,7 @@
 package Main;
 
+import java.util.Random;
+
 import org.ojalgo.OjAlgoUtils;
 import org.ojalgo.RecoverableCondition;
 import org.ojalgo.access.Access2D;
@@ -27,12 +29,12 @@ public class HopfieldNetwork {
 		PATTERNS = Matrixpatterns;
 		P = PATTERNS.countColumns();
 		N = PATTERNS.countRows();
-		WEIGHT = storeFactory.makeFilled(N, N, new RandomDistri(-P / N, P / N));
+		training();
 		for (int i = 0; i < N; i++) {
 			WEIGHT.set(i, i, 0);
 		}
-		// FIXME poner WEIGHT simetrico => wij = wji
-		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(-1, 1));
+		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(1, 1));
+		out();
 		System.out.println("Max patterns = " + (int) N / (2 * Math.log(N)));
 	}
 
@@ -40,10 +42,18 @@ public class HopfieldNetwork {
 		PrimitiveDenseStore x = (PrimitiveDenseStore) WEIGHT.multiply(NEURONS); // TODO mirar si es de tamaño Nx1
 		for (int i = 0; i < x.countRows(); i++) {
 			for (int j = 0; j < x.countColumns(); j++) {
-				x.set(i, j, sgn(x.get(i, j)) == 0 ?x.get(i, j):sgn(x.get(i, j)));
+				x.set(i, j, sgn(x.get(i, j)) == 0 ? x.get(i, j) : sgn(x.get(i, j)));
 			}
 		}
 		NEURONS = x;
+	}
+
+	public double out(int j) {
+		double temp = 0;
+		for (int i = 0; i < N; i++) {
+			temp += WEIGHT.get(j, i) * NEURONS.get(i, 0);
+		}
+		return sgn(temp) == 0 ? temp : sgn(temp);
 	}
 
 	private double sgn(Double double1) {
@@ -54,7 +64,28 @@ public class HopfieldNetwork {
 
 	public void training() {
 		PrimitiveDenseStore res = (PrimitiveDenseStore) PATTERNS.multiply(PATTERNS.transpose());
-		res=(PrimitiveDenseStore) res.multiply(1 / N); // TODO revisar si multiplica el escalar
+		res = (PrimitiveDenseStore) res.multiply(1 / N); // TODO revisar si multiplica el escalar
 		WEIGHT = res; // TODO mirar si es de tamaño NxN
+	}
+
+	public PrimitiveDenseStore getOut() {
+		Random rand = new Random();
+		boolean flag = false;
+		while (!flag) {
+			PrimitiveDenseStore copy = NEURONS.copy();
+			boolean[] vals = new boolean[(int) N];
+			int values = 0;
+			while (values != (int) N) {
+				int randNeuron = rand.nextInt((int) (N + 1));
+				if (!vals[randNeuron]) {
+					vals[randNeuron] = true;
+					values++;
+				}
+				double x = out(randNeuron);
+				NEURONS.set(randNeuron, 0, x);
+			}
+			flag = copy.equals(NEURONS);
+		}
+		return NEURONS;
 	}
 }
