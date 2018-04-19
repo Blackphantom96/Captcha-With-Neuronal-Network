@@ -135,7 +135,7 @@ public class Main {
         int x = INITIAL_X;
         int y = INITIAL_Y;
 
-        List<int[]> res = new ArrayList<>();
+        List<int[]> res = new ArrayList<int[]>();
 
         for (; x < LIMIT_X; x += DELTA_X) {
             res.add(toVector(image.getSubimage(x, y, DELTA_X, DELTA_Y)));

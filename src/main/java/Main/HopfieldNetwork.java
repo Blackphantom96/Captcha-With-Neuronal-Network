@@ -19,10 +19,9 @@ import org.ojalgo.netio.BasicLogger;
 import org.ojalgo.random.Weibull;
 
 public class HopfieldNetwork {
-    
-        private static final double EPS = 1e-12;
-        
-        
+
+	private static final double EPS = 1e-12;
+
 	PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
 	private PrimitiveDenseStore WEIGHT;
 	private PrimitiveDenseStore NEURONS;
@@ -34,10 +33,10 @@ public class HopfieldNetwork {
 		PATTERNS = Matrixpatterns;
 		P = PATTERNS.countColumns();
 		N = PATTERNS.countRows();
-		training();
-		for (int i = 0; i < N; i++) {
-			WEIGHT.set(i, i, 0.0);
-		}
+		training2();
+//		for (int i = 0; i < N; i++) {
+//			WEIGHT.set(i, i, 0.0);
+//		}
 		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(-1, 1));
 		out();
 		System.out.println("Encontre " + P + " patrones -- El Maximo de patrones que puede almacenar es: "
@@ -65,23 +64,40 @@ public class HopfieldNetwork {
 	private double sgn(double x) {
 		if (Math.abs(x) < EPS) {
 			return 0.0;
-                }
+		}
 		return x < 0.0 ? -1.0 : 1.0;
 	}
 
 	public void training() {
 		PrimitiveDenseStore res = (PrimitiveDenseStore) PATTERNS.multiply(PATTERNS.transpose());
-		System.out.println(" entrenando: "+res+Arrays.toString(res.data));
-		res = (PrimitiveDenseStore) res.multiply(1.0 / N); // TODO revisar porque da -0 y 0
-                System.out.println(" entrenando: "+res+Arrays.toString(res.data));
+		System.out.println(" entrenando: " + res + Arrays.toString(res.data));
+		res = (PrimitiveDenseStore) res.multiply(1.0 / N); 
+		System.out.println(" entrenando: " + res + Arrays.toString(res.data));
 		WEIGHT = res;
+	}
+
+	public void training2() {
+		WEIGHT = storeFactory.makeZero(N, N);
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				double res = 0.0;
+				if (i == j) {
+					res=0.0;
+				} else {
+					for (int k = 0; k < P; k++) {
+						res += PATTERNS.get(i, k) * PATTERNS.get(j, k);
+					}
+				}
+				WEIGHT.set(j, i, res / N);
+			}
+		}
 	}
 
 	public PrimitiveDenseStore getOut(PrimitiveDenseStore NEURONS1) {
 		NEURONS = NEURONS1;
 		Random rand = new Random();
 		boolean flag = false;
-                int it = 0;
+		int it = 0;
 		while (!flag) {
 			PrimitiveDenseStore copy = NEURONS.copy(); // TODO mirar una forma mas eficiente
 			boolean[] vals = new boolean[(int) N];
@@ -91,14 +107,14 @@ public class HopfieldNetwork {
 				if (!vals[randNeuron]) {
 					vals[randNeuron] = true;
 					values++;
+					double x = out(randNeuron);
+					NEURONS.set(randNeuron, 0, x);
 				}
-				double x = out(randNeuron);
-				NEURONS.set(randNeuron, 0, x);
 			}
 			flag = copy.equals(NEURONS);
-                        it++;
+			it++;
 		}
-                System.out.println("ITERACIONES: " + it);
+		System.out.println("ITERACIONES: " + it);
 		return NEURONS;
 	}
 }
