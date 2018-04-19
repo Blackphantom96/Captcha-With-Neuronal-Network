@@ -35,7 +35,7 @@ public class HopfieldNetwork {
 		}
 		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(1, 1));
 		out();
-		System.out.println("Entrenamos con "+ P + " patrones, y el Maximo de patrones es = " + (int) N / (2 * Math.log(N)));
+		System.out.println("Encontre "+ P + " patrones -- El Maximo de patrones es = " + (int) N / (2 * Math.log(N)));
 	}
 
 	public void out() {

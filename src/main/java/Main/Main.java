@@ -35,7 +35,7 @@ public class Main {
 			}
 		}
 		System.out.println(pattersMatrix);
-		
+		HopfieldNetwork net = new HopfieldNetwork(pattersMatrix);
 	}
 	
 	private static int[] toVector(BufferedImage imgBuffer) {
