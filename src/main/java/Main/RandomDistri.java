@@ -3,6 +3,7 @@ package Main;
 import java.util.Random;
 
 import org.ojalgo.function.NullaryFunction;
+import org.ojalgo.function.UnaryFunction;
 import org.ojalgo.random.RandomNumber;
 
 public class RandomDistri extends RandomNumber {
@@ -27,5 +28,17 @@ public class RandomDistri extends RandomNumber {
 		Random rand = new Random();
 		return rand.nextInt((int) (x-y)) + y;
 	}
+
+    public NullaryFunction<Double> andThen(UnaryFunction<Double> after) {
+        return super.andThen(after); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Double get() {
+        return super.get(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public double getAsDouble() {
+        return super.getAsDouble(); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }
