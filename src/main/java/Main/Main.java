@@ -22,27 +22,20 @@ public class Main {
 		PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
 		ArrayList<int[]> patterns = new ArrayList<int[]>();
 		for (char c : chars) {
-			//System.out.println(System.getProperty("user.dir") + "/src/images/characters/" + c + ".jpg");
 			BufferedImage imgBuffer = ImageIO
-					.read(new File(System.getProperty("user.dir") + "/src/images/characters/" + c + ".jpg"));
+					.read(new File(System.getProperty("user.dir") + "/src/images/characters/" + c + ".png"));
 			h=imgBuffer.getHeight();
 			w=imgBuffer.getWidth();
-			//System.out.println(c+Arrays.toString(toVector(imgBuffer)));
 			patterns.add(toVector(imgBuffer));
 		}
 		PrimitiveDenseStore pattersMatrix = storeFactory.makeZero(w*h,patterns.size());
 		for(int i =0;i<patterns.size();i++) {
-			//pattersMatrix.modifyColumn(0, i, patterns.get(i));
+			for(int j = 0 ; j<w*h;j++) {
+				pattersMatrix.set(j, i, patterns.get(i)[j]);
+			}
 		}
+		System.out.println(pattersMatrix);
 		
-		
-		
-		PrimitiveDenseStore NEURONS = storeFactory.makeFilled(2, 2, new RandomDistri(1, 1));
-		PrimitiveDenseStore x = storeFactory.makeFilled(1, 2, new RandomDistri(1, 1));
-		PrimitiveDenseStore a = (PrimitiveDenseStore) x.multiply(NEURONS);
-		a = (PrimitiveDenseStore) a.multiply(10);
-		a.add(0, 1, 8);
-		System.out.println(a);
 	}
 	
 	private static int[] toVector(BufferedImage imgBuffer) {
@@ -51,7 +44,7 @@ public class Main {
 		for (int j = 0; j < h; j++) {
 			for (int k = 0; k < w; k++) {
 				int x = (imgBuffer.getRGB(k, j));
-				temp[index++] = x==-1?-1:1;
+				temp[index++] = x>=-1?-1:1;
 			}
 		}
 		return temp;
