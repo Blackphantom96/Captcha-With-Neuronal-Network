@@ -32,7 +32,7 @@ public class Main {
 		}
 		PrimitiveDenseStore pattersMatrix = storeFactory.makeZero(w*h,patterns.size());
 		for(int i =0;i<patterns.size();i++) {
-			pattersMatrix.modifyColumn(0, i, patterns.get(i));
+			//pattersMatrix.modifyColumn(0, i, patterns.get(i));
 		}
 		
 		
