@@ -19,6 +19,10 @@ import org.ojalgo.netio.BasicLogger;
 import org.ojalgo.random.Weibull;
 
 public class HopfieldNetwork {
+    
+        private static final double EPS = 1e-12;
+        
+        
 	PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
 	private PrimitiveDenseStore WEIGHT;
 	private PrimitiveDenseStore NEURONS;
@@ -32,19 +36,19 @@ public class HopfieldNetwork {
 		N = PATTERNS.countRows();
 		training();
 		for (int i = 0; i < N; i++) {
-			WEIGHT.set(i, i, 0);
+			WEIGHT.set(i, i, 0.0);
 		}
 		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(1, 1));
 		out();
 		System.out.println("Encontre " + P + " patrones -- El Maximo de patrones que puede almacenar es: "
-				+ (int) N / (2 * Math.log(N)));
+				+ (int) (N / (2.0 * Math.log(N))));
 	}
 
 	public void out() {
 		PrimitiveDenseStore x = (PrimitiveDenseStore) WEIGHT.multiply(NEURONS); // TODO mirar si es de tamaño Nx1
 		for (int i = 0; i < x.countRows(); i++) {
 			for (int j = 0; j < x.countColumns(); j++) {
-				x.set(i, j, sgn(x.get(i, j)) == 0 ? x.get(i, j) : sgn(x.get(i, j)));
+				x.set(i, j, sgn(x.get(i, j)) == 0.0 ? x.get(i, j) : sgn(x.get(i, j)));
 			}
 		}
 		NEURONS = x;
@@ -55,20 +59,22 @@ public class HopfieldNetwork {
 		for (int i = 0; i < N; i++) {
 			temp += WEIGHT.get(j, i) * NEURONS.get(i, 0);
 		}
-		return sgn(temp) == 0 ? temp : sgn(temp);
+		return Math.abs(sgn(temp)) < EPS ? temp : sgn(temp);
 	}
 
-	private double sgn(Double double1) {
-		if (double1 == 0)
-			return 0;
-		return Math.abs(double1) / double1;
+	private double sgn(double x) {
+		if (Math.abs(x) < EPS) {
+			return 0.0;
+                }
+		return Math.abs(x) / x;
 	}
 
 	public void training() {
 		PrimitiveDenseStore res = (PrimitiveDenseStore) PATTERNS.multiply(PATTERNS.transpose());
-		//System.out.println(" entrenando: "+res+Arrays.toString(res.data));
-		res = (PrimitiveDenseStore) res.multiply(1 / N); // TODO revisar porque da -0 y 0
-		WEIGHT = res; 
+		System.out.println(" entrenando: "+res+Arrays.toString(res.data));
+		res = (PrimitiveDenseStore) res.multiply(1.0 / N); // TODO revisar porque da -0 y 0
+                System.out.println(" entrenando: "+res+Arrays.toString(res.data));
+		WEIGHT = res;
 	}
 
 	public PrimitiveDenseStore getOut(PrimitiveDenseStore NEURONS1) {
