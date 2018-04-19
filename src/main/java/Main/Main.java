@@ -3,6 +3,7 @@ package Main;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
@@ -19,6 +20,7 @@ public class Main {
 	private static int h,w;
 	public static void main(String[] args) throws IOException {
 		PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
+		ArrayList<int[]> patterns = new ArrayList<int[]>();
 		for (char c : chars) {
 			//System.out.println(System.getProperty("user.dir") + "/src/images/characters/" + c + ".jpg");
 			BufferedImage imgBuffer = ImageIO
@@ -26,10 +28,12 @@ public class Main {
 			h=imgBuffer.getHeight();
 			w=imgBuffer.getWidth();
 			//System.out.println(c+Arrays.toString(toVector(imgBuffer)));
-			printChar(toVector(imgBuffer));
+			patterns.add(toVector(imgBuffer));
 		}
-
-		
+		PrimitiveDenseStore pattersMatrix = storeFactory.makeZero(w*h,patterns.size());
+		for(int i =0;i<patterns.size();i++) {
+			pattersMatrix.modifyColumn(0, i, patterns.get(i));
+		}
 		
 		
 		
