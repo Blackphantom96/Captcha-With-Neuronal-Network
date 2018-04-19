@@ -38,7 +38,7 @@ public class HopfieldNetwork {
 		for (int i = 0; i < N; i++) {
 			WEIGHT.set(i, i, 0.0);
 		}
-		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(1, 1));
+		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(-1, 1));
 		out();
 		System.out.println("Encontre " + P + " patrones -- El Maximo de patrones que puede almacenar es: "
 				+ (int) (N / (2.0 * Math.log(N))));
@@ -57,7 +57,7 @@ public class HopfieldNetwork {
 	public double out(int j) {
 		double temp = 0;
 		for (int i = 0; i < N; i++) {
-			temp += WEIGHT.get(j, i) * NEURONS.get(i, 0);
+			temp += WEIGHT.get(i, j) * NEURONS.get(i, 0); // TODO: ver si es ji o ij
 		}
 		return Math.abs(sgn(temp)) < EPS ? temp : sgn(temp);
 	}
@@ -66,7 +66,7 @@ public class HopfieldNetwork {
 		if (Math.abs(x) < EPS) {
 			return 0.0;
                 }
-		return Math.abs(x) / x;
+		return x < 0.0 ? -1.0 : 1.0;
 	}
 
 	public void training() {
@@ -78,11 +78,12 @@ public class HopfieldNetwork {
 	}
 
 	public PrimitiveDenseStore getOut(PrimitiveDenseStore NEURONS1) {
-		NEURONS = NEURONS1.copy();
+		NEURONS = NEURONS1;
 		Random rand = new Random();
 		boolean flag = false;
+                int it = 0;
 		while (!flag) {
-			PrimitiveDenseStore copy = NEURONS.copy();
+			PrimitiveDenseStore copy = NEURONS.copy(); // TODO mirar una forma mas eficiente
 			boolean[] vals = new boolean[(int) N];
 			int values = 0;
 			while (values != (int) N) {
@@ -95,7 +96,9 @@ public class HopfieldNetwork {
 				NEURONS.set(randNeuron, 0, x);
 			}
 			flag = copy.equals(NEURONS);
+                        it++;
 		}
+                System.out.println("ITERACIONES: " + it);
 		return NEURONS;
 	}
 }

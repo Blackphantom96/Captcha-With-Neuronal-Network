@@ -28,8 +28,10 @@ public class Main {
     private static char[] chars = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     private static int h, w;
 
+    private static PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
+
     public static void main(String[] args) throws IOException {
-        PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
+
         ArrayList<int[]> patterns = new ArrayList<int[]>();
         for (char c : chars) {
             //System.out.println(System.getProperty("user.dir") + "/src/images/characters/" + c + ".jpg");
@@ -42,16 +44,25 @@ public class Main {
             patterns.add(toVector(imgBuffer));
         }
 
+        PrimitiveDenseStore patternsMatrix = storeFactory.makeZero(w * h, patterns.size());
+        for (int i = 0; i < patterns.size(); i++) {
+            for (int j = 0; j < w * h; j++) {
+                patternsMatrix.set(j, i, patterns.get(i)[j]);
+            }
+        }
+        HopfieldNetwork net = new HopfieldNetwork(patternsMatrix);
+
         /* TODO: BORRAR --------- */
         BufferedImage imgBuffer = ImageIO
                 .read(new File(System.getProperty("user.dir") + "/src/images/training_images/" + 1 + ".jpg"));
         int hh = imgBuffer.getHeight();
         int ww = imgBuffer.getWidth();
-        printChar(toVector(imgBuffer), hh, ww);
+        //printChar(toVector(imgBuffer), hh, ww);
         List<int[]> imgs = getImagePortions(imgBuffer);
 
         for (int[] img : imgs) {
-            printChar(img, 18, 12);
+            // printChar(img, 18, 12);
+            printChar(net.getOut(convertIntVecToMatrix(img)), h, w);
         }
 
         /* HASTA AQUI ------- */
@@ -61,14 +72,16 @@ public class Main {
         a = (PrimitiveDenseStore) a.multiply(10);
         a.add(0, 1, 8);
         System.out.println(a);
+    }
 
-        PrimitiveDenseStore patternsMatrix = storeFactory.makeZero(w * h, patterns.size());
-        for (int i = 0; i < patterns.size(); i++) {
-            for (int j = 0; j < w * h; j++) {
-                patternsMatrix.set(j, i, patterns.get(i)[j]);
-            }
+    private static PrimitiveDenseStore convertIntVecToMatrix(int[] vec) {
+        PrimitiveDenseStore r = storeFactory.makeZero(h * w, 1);
+
+        for (int i = 0; i < vec.length; i++) {
+            r.set(i, 0, vec[i]);
         }
-        HopfieldNetwork net = new HopfieldNetwork(patternsMatrix);
+
+        return r;
     }
 
     private static double getPixelGrayscaleMeanNormalized(int x) {
@@ -100,6 +113,17 @@ public class Main {
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
                 System.out.print((in[index++] == 1 ? "*" : ".") + "");
+            }
+            System.out.println();
+        }
+        System.out.println("----------------------------");
+    }
+    
+    public static void printChar(PrimitiveDenseStore in, int h, int w) {
+        int index = 0;
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                System.out.print((in.get(index++, 0) == 1 ? "*" : ".") + "");
             }
             System.out.println();
         }
