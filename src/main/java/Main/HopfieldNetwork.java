@@ -1,5 +1,6 @@
 package Main;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import org.ojalgo.OjAlgoUtils;
@@ -35,7 +36,8 @@ public class HopfieldNetwork {
 		}
 		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(1, 1));
 		out();
-		System.out.println("Encontre "+ P + " patrones -- El Maximo de patrones que puede almacenar es: " + (int) N / (2 * Math.log(N)));
+		System.out.println("Encontre " + P + " patrones -- El Maximo de patrones que puede almacenar es: "
+				+ (int) N / (2 * Math.log(N)));
 	}
 
 	public void out() {
@@ -64,11 +66,13 @@ public class HopfieldNetwork {
 
 	public void training() {
 		PrimitiveDenseStore res = (PrimitiveDenseStore) PATTERNS.multiply(PATTERNS.transpose());
-		res = (PrimitiveDenseStore) res.multiply(1 / N); // TODO revisar si multiplica el escalar
-		WEIGHT = res; // TODO mirar si es de tamaño NxN
+		//System.out.println(" entrenando: "+res+Arrays.toString(res.data));
+		res = (PrimitiveDenseStore) res.multiply(1 / N); // TODO revisar porque da -0 y 0
+		WEIGHT = res; 
 	}
 
-	public PrimitiveDenseStore getOut() {
+	public PrimitiveDenseStore getOut(PrimitiveDenseStore NEURONS1) {
+		NEURONS = NEURONS1.copy();
 		Random rand = new Random();
 		boolean flag = false;
 		while (!flag) {
@@ -76,7 +80,7 @@ public class HopfieldNetwork {
 			boolean[] vals = new boolean[(int) N];
 			int values = 0;
 			while (values != (int) N) {
-				int randNeuron = rand.nextInt((int) (N + 1));
+				int randNeuron = rand.nextInt((int) N);
 				if (!vals[randNeuron]) {
 					vals[randNeuron] = true;
 					values++;

@@ -34,7 +34,6 @@ public class Main {
 				pattersMatrix.set(j, i, patterns.get(i)[j]);
 			}
 		}
-		System.out.println(pattersMatrix);
 		HopfieldNetwork net = new HopfieldNetwork(pattersMatrix);
 	}
 	
