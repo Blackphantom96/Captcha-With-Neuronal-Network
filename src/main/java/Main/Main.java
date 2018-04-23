@@ -20,14 +20,14 @@ import org.ojalgo.random.Weibull;
 
 public class Main {
 
-	public static final double COLOR_SENSIBILITY = 0.5;
+	public static final double COLOR_SENSIBILITY = 0.91;
 	public static final int DELTA_X = 12;
 	public static final int DELTA_Y = 18;
 	public static final int INITIAL_X = 15;
 	public static final int INITIAL_Y = 4;
 	public static final int LIMIT_X = 75;
 
-	private static char[] chars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+	private static char[] chars = {'8','3','0','2','1'};
 	private static int h, w;
 
 	private static PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
@@ -53,14 +53,16 @@ public class Main {
 
         /* TODO: BORRAR --------- */
         BufferedImage imgBuffer = ImageIO
-                .read(new File(System.getProperty("user.dir") + "/src/images/training_images/" + "1" + ".jpg"));
+                .read(new File(System.getProperty("user.dir") + "/src/images/training_images/" + "48" + ".jpg"));
         int hh = imgBuffer.getHeight();
         int ww = imgBuffer.getWidth();
         //printChar(toVector(imgBuffer), hh, ww);
         List<int[]> imgs = getImagePortions(imgBuffer);
 
         for (int[] img : imgs) {
-            // printChar(img, 18, 12);
+        		System.out.println("entrada");
+            printChar(img, h, w);
+            System.out.println("saldia");
             printChar(net.getOut(convertIntVecToMatrix(img)), h, w);
         }
 

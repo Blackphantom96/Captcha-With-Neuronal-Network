@@ -37,9 +37,6 @@ public class HopfieldNetwork {
 		P = PATTERNS.countColumns();
 		N = PATTERNS.countRows();
 		training();
-		// for (int i = 0; i < N; i++) {
-		// WEIGHT.set(i, i, 0.0);
-		// }
 		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(-1, 1));
 		System.out.println("Encontre " + P + " patrones -- El Maximo de patrones que puede almacenar es: "
 				+ (int) (N / (2.0 * Math.log(N))));
@@ -50,7 +47,7 @@ public class HopfieldNetwork {
 		for (int i = 0; i < N; i++) {
 			temp += WEIGHT.get(j, i) * NEURONS.get(i, 0); // TODO: ver si es ji o ij
 		}
-		return Math.abs(sgn(temp)) == 0.0 ? NEURONS.get(j, 0) : sgn(temp);
+		return 0.0 == Math.abs(sgn(temp)) ? NEURONS.get(j, 0) : sgn(temp);
 	}
 
 	private double sgn(double x) {
@@ -64,6 +61,9 @@ public class HopfieldNetwork {
 		PrimitiveDenseStore res = (PrimitiveDenseStore) PATTERNS.multiply(PATTERNS.transpose());
 		res = (PrimitiveDenseStore) res.multiply(1.0 / N);
 		WEIGHT = res;
+		for (int i = 0; i < WEIGHT.countColumns(); i++)
+			WEIGHT.set(i, i, 0);
+		//Main.printMatrix(WEIGHT, N, N);
 	}
 
 	public void training2() {
@@ -86,10 +86,7 @@ public class HopfieldNetwork {
 	public PrimitiveDenseStore getOut(PrimitiveDenseStore NEURONS1) {
 		NEURONS = NEURONS1;
 		Random rand = new Random();
-		WEIGHT = (PrimitiveDenseStore) PATTERNS.multiply(PATTERNS.transpose());
-		WEIGHT = (PrimitiveDenseStore) WEIGHT.multiply(1.0 / N);
-		for (int i = 0; i < WEIGHT.countColumns(); i++)
-			WEIGHT.set(i, i, 0);
+		//training();
 		ArrayList<Integer> randomVector = new ArrayList<Integer>();
 		while (randomVector.size() != N) {
 			int x = rand.nextInt((int) N);
@@ -100,9 +97,11 @@ public class HopfieldNetwork {
 			int count =0 ;
 			int index = randomVector.get(i);
 			while(count!=50) {
-				Double delta = NEURONS.get(index, 0);
-				sgn(index);
-				if(delta.equals(NEURONS.get(index, 0)))
+				double delta = NEURONS.get(index, 0);
+				//System.out.println("antes"+delta);
+				NEURONS.set(index, 0, out(index));
+				//System.out.println("despues"+NEURONS.get(index,0));
+				if(delta == (NEURONS.get(index, 0)))
 					count++;
 			}
 			
