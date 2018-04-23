@@ -20,14 +20,14 @@ import org.ojalgo.random.Weibull;
 
 public class Main {
 
-	public static final double COLOR_SENSIBILITY = 0.91;
+	public static final double COLOR_SENSIBILITY = 0.8;
 	public static final int DELTA_X = 12;
 	public static final int DELTA_Y = 18;
 	public static final int INITIAL_X = 15;
 	public static final int INITIAL_Y = 4;
 	public static final int LIMIT_X = 75;
 
-	private static char[] chars = {'8','3','0','2','1'};
+	private static char[] chars = {'8','3','0','2','1','4','5','6','7','9'};
 	private static int h, w;
 
 	private static PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;

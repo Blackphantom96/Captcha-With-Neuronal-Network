@@ -39,7 +39,7 @@ public class HopfieldNetwork {
 		training();
 		NEURONS = storeFactory.makeFilled(N, 1, new RandomDistri(-1, 1));
 		System.out.println("Encontre " + P + " patrones -- El Maximo de patrones que puede almacenar es: "
-				+ (int) (N / (2.0 * Math.log(N))));
+				+ (int) (N / (4.0 * Math.log(N))));
 	}
 
 	public double out(int j) {
