@@ -22,57 +22,59 @@ public class Main2 {
     private static PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
     private static int h, w;
 
-    public static final int START_IMAGE = 42;
-    public static final int AMOUNT_IMAGES = 45;
+    public static final int START_IMAGE = 1;
+    public static final int AMOUNT_IMAGES = 15;
 
-    private static final List<Integer> SELECTED = Arrays.asList(2, 8, 25, 54, 71, 92, 77);
-
+    //private static final List<Integer> SELECTED = Arrays.asList(2, 8, 25, 54, 71, 92, 77);
     public static void main(String[] args) throws IOException {
-        ArrayList<int[]> patterns = new ArrayList<int[]>();
-        //for (int c = START_IMAGE; c <= AMOUNT_IMAGES; c++) {
-        for (Integer c : SELECTED) {
-            BufferedImage imgBuffer = ImageIO
-                    .read(new File(System.getProperty("user.dir") + "/src/images/dataSetTraining/" + c + ".jpg"));
-            h = imgBuffer.getHeight();
-            w = imgBuffer.getWidth();
-            h *= IMAGE_FACTOR;
-            w *= IMAGE_FACTOR;
-            imgBuffer = scale(imgBuffer, w, h);
-            //printChar(toVector(imgBuffer), h, w);
-            patterns.add(toVector(imgBuffer));
-        }
-
-        PrimitiveDenseStore patternsMatrix = storeFactory.makeZero(w * h, patterns.size());
-        for (int i = 0; i < patterns.size(); i++) {
-            for (int j = 0; j < w * h; j++) {
-                patternsMatrix.set(j, i, patterns.get(i)[j]);
+        for (int cycle = 1; cycle <= 7; cycle++) {
+            ArrayList<int[]> patterns = new ArrayList<int[]>();
+            for (int c = START_IMAGE * cycle; c <= AMOUNT_IMAGES * cycle; c++) {
+                //for (Integer c : SELECTED) {
+                BufferedImage imgBuffer = ImageIO
+                        .read(new File(System.getProperty("user.dir") + "/src/images/dataSetTraining/" + c + ".jpg"));
+                h = imgBuffer.getHeight();
+                w = imgBuffer.getWidth();
+                h *= IMAGE_FACTOR;
+                w *= IMAGE_FACTOR;
+                imgBuffer = scale(imgBuffer, w, h);
+                //printChar(toVector(imgBuffer), h, w);
+                patterns.add(toVector(imgBuffer));
             }
-        }
 
-        System.out.println(patternsMatrix);
-        System.out.println("TRAINING...");
-
-        HopfieldNetwork net = new HopfieldNetwork(patternsMatrix);
-
-        /* FIN ENTRENAMIENTO */
-        //for (int c = START_IMAGE; c <= AMOUNT_IMAGES; c++) {
-        for (Integer c : SELECTED) {
-            BufferedImage imgDamage = ImageIO.read(new File(System.getProperty("user.dir") + "/src/images/dataSetTest/" + c + ".jpg"));
-            PrimitiveDenseStore damageMatrix = convertIntVecToMatrix(toVector(imgDamage));
-            System.out.println("TEST #" + c);
-            PrimitiveDenseStore res = net.getOut(damageMatrix);
-            int[] resInt = printMatrix(res, res.countRows(), res.countColumns());
-            BufferedImage finalImage = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-            int pixel = 0;
-            for (int i = 0; i < w; i++) {
-                for (int j = 0; j < h; j++) {
-                    //System.out.println("The pixel in Matrix: " + resInt[pixel]);
-                    finalImage.setRGB(j, i, resInt[pixel++]);
-                    //System.out.println("The pixel in BufferedImage: " + finalImage.getRGB(j, i));
+            PrimitiveDenseStore patternsMatrix = storeFactory.makeZero(w * h, patterns.size());
+            for (int i = 0; i < patterns.size(); i++) {
+                for (int j = 0; j < w * h; j++) {
+                    patternsMatrix.set(j, i, patterns.get(i)[j]);
                 }
             }
-            ImageIO.write(finalImage, "jpg", new File(System.getProperty("user.dir") + "/src/images/out/" + c + ".jpg"));
+
+            System.out.println(patternsMatrix);
+            System.out.println("TRAINING...");
+
+            HopfieldNetwork net = new HopfieldNetwork(patternsMatrix);
+
+            /* FIN ENTRENAMIENTO */
+            for (int c = START_IMAGE * cycle; c <= AMOUNT_IMAGES * cycle; c++) {
+                //for (Integer c : SELECTED) {
+                BufferedImage imgDamage = ImageIO.read(new File(System.getProperty("user.dir") + "/src/images/dataSetTest/" + c + ".jpg"));
+                PrimitiveDenseStore damageMatrix = convertIntVecToMatrix(toVector(imgDamage));
+                System.out.println("TEST #" + c);
+                PrimitiveDenseStore res = net.getOut(damageMatrix);
+                int[] resInt = printMatrix(res, res.countRows(), res.countColumns());
+                BufferedImage finalImage = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+                int pixel = 0;
+                for (int i = 0; i < w; i++) {
+                    for (int j = 0; j < h; j++) {
+                        //System.out.println("The pixel in Matrix: " + resInt[pixel]);
+                        finalImage.setRGB(j, i, resInt[pixel++]);
+                        //System.out.println("The pixel in BufferedImage: " + finalImage.getRGB(j, i));
+                    }
+                }
+                ImageIO.write(finalImage, "jpg", new File(System.getProperty("user.dir") + "/src/images/out/" + c + ".jpg"));
+            }
         }
+        
         System.out.println("THAT'S ALL FOLKS.");
     }
 
