@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -16,16 +18,19 @@ import org.ojalgo.matrix.store.PrimitiveDenseStore;
 
 public class Main2 {
 
-    public static final double COLOR_SENSIBILITY = 0.5;
+    public static double COLOR_SENSIBILITY = 0.5;
     private static PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
     private static int h, w;
 
     public static final int START_IMAGE = 42;
-    public static final int AMOUNT_IMAGES = 60;
+    public static final int AMOUNT_IMAGES = 45;
+
+    private static final List<Integer> SELECTED = Arrays.asList(2, 8, 25, 54, 71, 92, 77);
 
     public static void main(String[] args) throws IOException {
         ArrayList<int[]> patterns = new ArrayList<int[]>();
-        for (int c = START_IMAGE; c <= AMOUNT_IMAGES; c++) {
+        //for (int c = START_IMAGE; c <= AMOUNT_IMAGES; c++) {
+        for (Integer c : SELECTED) {
             BufferedImage imgBuffer = ImageIO
                     .read(new File(System.getProperty("user.dir") + "/src/images/dataSetTraining/" + c + ".jpg"));
             h = imgBuffer.getHeight();
@@ -50,7 +55,8 @@ public class Main2 {
         HopfieldNetwork net = new HopfieldNetwork(patternsMatrix);
 
         /* FIN ENTRENAMIENTO */
-        for (int c = START_IMAGE; c <= AMOUNT_IMAGES; c++) {
+        //for (int c = START_IMAGE; c <= AMOUNT_IMAGES; c++) {
+        for (Integer c : SELECTED) {
             BufferedImage imgDamage = ImageIO.read(new File(System.getProperty("user.dir") + "/src/images/dataSetTest/" + c + ".jpg"));
             PrimitiveDenseStore damageMatrix = convertIntVecToMatrix(toVector(imgDamage));
             System.out.println("TEST #" + c);
@@ -74,7 +80,17 @@ public class Main2 {
         int index = 0;
         w = imgBuffer.getWidth();
         h = imgBuffer.getHeight();
+        COLOR_SENSIBILITY = 0.0;
         int temp[] = new int[w * h];
+        for (int j = 0; j < h; j++) {
+            for (int k = 0; k < w; k++) {
+                int x = (imgBuffer.getRGB(k, j));
+                COLOR_SENSIBILITY += getPixelGrayscaleMeanNormalized(x);
+            }
+        }
+
+        COLOR_SENSIBILITY /= w * h;
+
         for (int j = 0; j < h; j++) {
             for (int k = 0; k < w; k++) {
                 int x = (imgBuffer.getRGB(k, j));
