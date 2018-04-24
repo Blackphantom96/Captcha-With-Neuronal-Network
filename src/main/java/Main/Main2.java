@@ -20,11 +20,12 @@ public class Main2 {
     private static PhysicalStore.Factory<Double, PrimitiveDenseStore> storeFactory = PrimitiveDenseStore.FACTORY;
     private static int h, w;
 
-    public static final int AMOUNT_IMAGES = 105;
+    public static final int START_IMAGE = 42;
+    public static final int AMOUNT_IMAGES = 60;
 
     public static void main(String[] args) throws IOException {
         ArrayList<int[]> patterns = new ArrayList<int[]>();
-        for (int c = 1; c <= AMOUNT_IMAGES; c++) {
+        for (int c = START_IMAGE; c <= AMOUNT_IMAGES; c++) {
             BufferedImage imgBuffer = ImageIO
                     .read(new File(System.getProperty("user.dir") + "/src/images/dataSetTraining/" + c + ".jpg"));
             h = imgBuffer.getHeight();
@@ -49,7 +50,7 @@ public class Main2 {
         HopfieldNetwork net = new HopfieldNetwork(patternsMatrix);
 
         /* FIN ENTRENAMIENTO */
-        for (int c = 1; c <= AMOUNT_IMAGES; c++) {
+        for (int c = START_IMAGE; c <= AMOUNT_IMAGES; c++) {
             BufferedImage imgDamage = ImageIO.read(new File(System.getProperty("user.dir") + "/src/images/dataSetTest/" + c + ".jpg"));
             PrimitiveDenseStore damageMatrix = convertIntVecToMatrix(toVector(imgDamage));
             System.out.println("TEST #" + c);
