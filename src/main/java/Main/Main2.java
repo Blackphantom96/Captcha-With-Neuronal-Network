@@ -29,7 +29,7 @@ public class Main2 {
     public static void main(String[] args) throws IOException {
         for (int cycle = 1; cycle <= 7; cycle++) {
             ArrayList<int[]> patterns = new ArrayList<int[]>();
-            for (int c = START_IMAGE * cycle; c <= AMOUNT_IMAGES * cycle; c++) {
+            for (int c = AMOUNT_IMAGES * cycle + START_IMAGE; c <= AMOUNT_IMAGES * (cycle + 1); c++) {
                 //for (Integer c : SELECTED) {
                 BufferedImage imgBuffer = ImageIO
                         .read(new File(System.getProperty("user.dir") + "/src/images/dataSetTraining/" + c + ".jpg"));
@@ -55,7 +55,7 @@ public class Main2 {
             HopfieldNetwork net = new HopfieldNetwork(patternsMatrix);
 
             /* FIN ENTRENAMIENTO */
-            for (int c = START_IMAGE * cycle; c <= AMOUNT_IMAGES * cycle; c++) {
+            for (int c = START_IMAGE + cycle * AMOUNT_IMAGES; c <= AMOUNT_IMAGES * (cycle+1); c++) {
                 //for (Integer c : SELECTED) {
                 BufferedImage imgDamage = ImageIO.read(new File(System.getProperty("user.dir") + "/src/images/dataSetTest/" + c + ".jpg"));
                 PrimitiveDenseStore damageMatrix = convertIntVecToMatrix(toVector(imgDamage));
@@ -74,7 +74,7 @@ public class Main2 {
                 ImageIO.write(finalImage, "jpg", new File(System.getProperty("user.dir") + "/src/images/out/" + c + ".jpg"));
             }
         }
-        
+
         System.out.println("THAT'S ALL FOLKS.");
     }
 
