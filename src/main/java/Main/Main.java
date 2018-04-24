@@ -22,7 +22,7 @@ import org.ojalgo.random.Weibull;
 
 public class Main {
 
-    public static final int IMAGE_FACTOR = 4;
+    public static final int IMAGE_FACTOR = 1;
     public static final double COLOR_SENSIBILITY = 0.91;
     public static final int DELTA_X = 12 * IMAGE_FACTOR;
     public static final int DELTA_Y = 18 * IMAGE_FACTOR;
